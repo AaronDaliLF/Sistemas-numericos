@@ -105,48 +105,63 @@ void ListaDecimal::borrarDatos(long v) {
 
 void ListaDecimal::imprimir1() {
     Nodo* p = head;
-    while (p != nullptr) {
-        cout << "  " << p->dato;
-        p = p->next;
+    if (p == nullptr) {
+        cout << "0";
+    } else {
+        while (p != nullptr) {
+            cout << p->dato;
+            p = p->next;
+        }
     }
 }
 
 void ListaDecimal::imprimir2() {
     Nodo* p = tail;
-    while (p != nullptr) {
-        cout << "  " << p->dato;
-        p = p->prev;
+    if (p == nullptr) {
+        cout << "0";
+    } else {
+        while (p != nullptr) {
+            cout << p->dato;
+            p = p->prev;
+        }
     }
 }
 
 ListaDecimal ListaDecimal::operator+(const ListaDecimal& op2) const {
     ListaDecimal resultado;
-    Nodo* nodo1 = head;
-    Nodo* nodo2 = op2.head;
+    Nodo* nodo1 = tail;
+    Nodo* nodo2 = op2.tail;
     int carry = 0;
 
     while (nodo1 || nodo2 || carry) {
         int sum = carry;
         if (nodo1) {
             sum += nodo1->dato;
-            nodo1 = nodo1->next;
+            nodo1 = nodo1->prev;
         }
         if (nodo2) {
             sum += nodo2->dato;
-            nodo2 = nodo2->next;
+            nodo2 = nodo2->prev;
         }
         resultado.entrarDatos(sum % 10);
         carry = sum / 10;
     }
 
+
     return resultado;
 }
 
+
+
 ostream& operator<<(ostream& salida, const ListaDecimal& num) {
     Nodo* temp = num.tail;
-    while (temp) {
-        salida << temp->dato;
-        temp = temp->prev;
+    if (temp == nullptr) {
+        salida << "0";
+    } else {
+        while (temp) {
+            salida << temp->dato;
+            temp = temp->prev;
+        }
     }
     return salida;
 }
