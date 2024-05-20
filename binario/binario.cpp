@@ -1,53 +1,73 @@
 #include "binario.h"
 
-/* Incluye el archivo de encabezado binario.h, que debe contener las declaraciones de la clase binario y otras funciones o clases relacionadas. */
+// Constructor que convierte un número decimal en binario
+binario::binario(long valor) {
+    // Inicializa la lista vacía
+    bin = lista();
 
-/*constructor predeterminado; convierte un entero decimal en un objeto binario*/
-binario::binario(long valor)
-{
-    for(int i = 0; i <= 39; i++)
-        bin[i] = 0;
-    /* Inicializa el arreglo bin[] con ceros */
-
-    /*coloca los digitos del argumento dentro del arreglo*/
-    for(int j = 39; valor != 0 && j >= 0; j--){
-        bin[j] = valor % 2;
-        valor /= 2;
+    // Convierte el número decimal en binario y lo guarda en la lista
+    while (valor != 0) {
+        bin.insertarAlInicio(valor % 2); // Inserta el residuo de la división en la lista (dígito binario)
+        valor /= 2; // Divide el valor por 2 para continuar con el siguiente dígito binario
     }
-    /* Convierte el valor decimal en binario y lo guarda en el arreglo bin[]. */
-}
 
-binario binario::operator+(const binario &op2) const
-{
-    binario temp;
-    int acarreo = 0;
-
-    for(int i = 39; i >= 0; i--){
-        temp.bin[i] = bin[i] + op2.bin[i] + acarreo;
-        if(temp.bin[i] > 1){
-            temp.bin[i] %= 2; //reduce a 0 - 1
-            acarreo = 1;
-        }
-        else
-            acarreo = 0;
+    // Si el valor original era 0, asegura que la lista contenga solo un 0
+    if (bin.getPrim() == nullptr) {
+        bin.insertarAlInicio(0);
     }
-    return temp;
 }
-/* Sobrecarga del operador '+' para sumar dos números binarios. Devuelve un nuevo objeto binario que representa la suma de los dos operandos. */
 
-/*operador de salida sobrecargado*/
-ostream& operator<<(ostream &salida, const binario &num)
-{
-    int i;
-    for(i = 0; (num.bin[i] == 0) && (i <= 39); i++);
-    /* Encuentra el primer bit significativo (diferente de cero) */
+#include <string>
 
-    if(i == 40)
-        salida << 0;
-    else
-        for( ; i <= 39; i++)
-            salida << num.bin[i];
-    /* Imprime el número binario sin ceros a la izquierda */
-    return salida;
+// Sobrecarga del operador de suma para sumar dos números binarios
+binario binario::operator+(const binario &op2) const {
+    binario temp; // Crea un objeto binario temporal para almacenar el resultado de la suma
+    int acarreo = 0; // Inicializa el acarreo en 0
+    string sumaString; // Variable para almacenar los bits calculados en la suma
+
+    // Obtiene los punteros al último nodo de cada lista (el bit menos significativo)
+    pnodo nodo1 = bin.getUltm();
+    pnodo nodo2 = op2.bin.getUltm();
+
+    // Realiza la suma de los bits de manera similar a la suma binaria manual
+    while (nodo1 != nullptr || nodo2 != nullptr || acarreo != 0) {
+        // Obtiene los bits correspondientes de los operandos y el acarreo
+        int bit1 = (nodo1 != nullptr) ? nodo1->num : 0; // Obtiene el bit del primer operando (o 0 si no hay más bits)
+        int bit2 = (nodo2 != nullptr) ? nodo2->num : 0; // Obtiene el bit del segundo operando (o 0 si no hay más bits)
+        int suma = bit1 + bit2 + acarreo; // Realiza la suma de los bits y el acarreo
+        sumaString += to_string(suma % 2); // Almacena el bit resultante de la suma en la variable string
+        acarreo = suma / 2; // Actualiza el acarreo para la próxima iteración
+
+        // Avanza los punteros al nodo anterior para continuar con la suma
+        if (nodo1 != nullptr) nodo1 = nodo1->ant;
+        if (nodo2 != nullptr) nodo2 = nodo2->ant;
+    }
+
+    // Invierte la cadena de bits para mostrar el resultado en el orden correcto
+    string resultado;
+    for (int i = sumaString.size() - 1; i >= 0; --i) {
+        resultado += sumaString[i];
+    }
+    // Muestra el resultado en binario
+    std::cout << "\n\n" << "n1 + n2 = " << resultado;
+
+    return temp; // Retorna el objeto binario temporal (aún no implementado)
 }
-/* Sobrecarga del operador '<<' para imprimir un objeto binario en una secuencia de salida, como la consola. */
+
+// Sobrecarga del operador de inserción para imprimir un objeto binario en una secuencia de salida
+ostream &operator<<(ostream &salida, const binario &num) {
+    pnodo p = num.bin.getPrim(); // Obtiene un puntero al primer nodo de la lista binaria
+
+    if (p == nullptr) { // Verifica si la lista está vacía
+        salida << "0"; // Si está vacía, imprime un solo 0
+        return salida; // Retorna la secuencia de salida
+    }
+
+    // Imprime los bits en el orden correcto de la lista
+    while (p != nullptr) {
+        salida << p->num; // Imprime el bit actual
+        p = p->sig; // Avanza al siguiente bit en la lista
+    }
+
+    return salida; // Retorna la secuencia de salida con los bits impresos
+}
