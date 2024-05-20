@@ -9,8 +9,7 @@ int main()
 
     // Impresión de los valores de los objetos binarios.
     cout << "\nn1 es " << n1;
-    cout << "\nn2 es " << n2;
-    cout << "\nn3 es " << n3;
+    cout << "\nn2 es " << n2;    
 
     // Suma de dos objetos binarios y asignación del resultado a n3.
     n3 = n1 + n2;
